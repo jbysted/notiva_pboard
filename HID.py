@@ -61,7 +61,8 @@ def change_layout (locale):
         key_lookup = en_uk_keycodes.key_lookup_en_uk
     
     return key_lookup
-change_layout("da_dk")
+
+key_lookup = da_dk_keycodes.key_lookup_da_dk
 
 def hold(key):
     holds[key] = True
