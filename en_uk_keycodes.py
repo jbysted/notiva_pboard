@@ -1,4 +1,4 @@
-key_lookup_eng_uk = { #[Keycode, Modifier]
+key_lookup_en_uk = { #[Keycode, Modifier]
     
     #Små bogstaver
     'a': [4, 0],

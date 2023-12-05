@@ -1,30 +1,25 @@
-# -*- coding: utf-8 -*-
-
 import time
-import DK_Keycodes
-import UK_Keycodes
+import da_dk_keycodes
+import en_uk_keycodes
 
 #Variables
 NULL_CHAR = chr(0)
 
-#Functions  
 #Create write_report function to write HID codes to the HID Keyboard
 def write_report(report):
     with open('/dev/hidg0', 'rb+') as fd:
         fd.write(report.encode())
 
 buttons = {
-
     'enter':        40,     # ENTER
     'esc':          41,     # ESC
     'backspace':    42,     # BACKSPACE
     'tab':          43,     # TAB
     'delete':       76,     # DELETE
-    'right':        79,     # Right
-    'left':         80,     # Left
-    'down':         81,     # Down
-    'up':           82      # Up
-
+    'right':        79,     # RIGHT
+    'left':         80,     # LEFT
+    'down':         81,     # DOWN
+    'up':           82      # UP
 }
 
 # Modifier keys as hex:
@@ -59,15 +54,14 @@ holds = {
     "altctrl":      False
 }
 
-def skift_sprog (kode):
-    if kode == "da_dk":
-        key_lookup = DK_Keycodes.key_lookup_da_dk
-    elif kode == "eng_uk":
-        key_lookup = UK_Keycodes.key_lookup_eng_uk
+def change_layout (locale):
+    if locale == "da_dk":
+        key_lookup = da_dk_keycodes.key_lookup_da_dk
+    elif locale == "en_uk":
+        key_lookup = en_uk_keycodes.key_lookup_en_uk
     
     return key_lookup
-
-key_lookup = DK_Keycodes.key_lookup_da_dk
+change_layout("da_dk")
 
 def hold(key):
     holds[key] = True
@@ -119,7 +113,7 @@ def send_keypress(k):
     if (release):
         write_report(NULL_CHAR * 8)
 
-    time.sleep(0.04) # skal være over 0.01
+    time.sleep(0.04) # Must be above .01
 
 def parse_input(raw_input):
     lines = raw_input.split("\n")
@@ -138,7 +132,6 @@ def parse_input(raw_input):
                 hold(content)
             case "release":
                 release(content)
-            case "sprog":
-                skift_sprog(content)
+            case "locale":
+                change_layout(content)
         time.sleep(0.02)
-
