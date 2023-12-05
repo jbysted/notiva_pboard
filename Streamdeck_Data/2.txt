@@ -1,0 +1,4 @@
+send This is simply to check that the eng version also works. I can write stuff WITH BIG LETTERS and symbols like !@#$%^&*()_}|?><|"{:
+sprog da_dk
+button enter
+send Nu burde den være tilbage til dansk og kan skrive æøååøæåæøåæøå igen uden problemer

@@ -1,0 +1,10 @@
+send nu skriver jeg lig både æ,ø og å, og endda specialtegn:!"#@, men ikke mellemrum
+wait 500
+hold shift
+hold ctrl
+button left
+release ctrl
+button up
+release shift
+wait 500
+send æøå-_
