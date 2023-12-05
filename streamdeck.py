@@ -84,12 +84,15 @@ def load():
         for icon in icons: #Gå igennem alle billederne
             shutil.copy2(os.path.join(path+"/icons",icon), os.path.join(dst_path+"/icons",icon)) #Ryk alle billederne
 
-        for key in range(deck.key_count()):
-            update_key_image(deck, key, False)
+        update_images()
 
     #todo: 0.png skal ikke overskrives!
 
     return
+
+def update_images():
+    for key in range(deck.key_count()):
+        update_key_image(deck, key, False)
 
 ASSETS_PATH = os.path.join("/home/pi/notiva_pboard/Streamdeck_Data", "icons")
 
@@ -163,7 +166,8 @@ def start():
 
     alert(0, "Loader...")
 
-    load()
+    #load()
+    update_images()
 
     try:
         print("Press a button on your Stream Deck...")

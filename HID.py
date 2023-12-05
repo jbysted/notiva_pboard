@@ -114,7 +114,7 @@ def send_keypress(k):
     if (release):
         write_report(NULL_CHAR * 8)
 
-    time.sleep(0.04) # Must be above .01
+    time.sleep(0.02) # Must be above .01
 
 def parse_input(raw_input):
     lines = raw_input.split("\n")
