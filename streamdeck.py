@@ -18,7 +18,7 @@ def button_pressed(streamdeck, key, state):
         else:
             print(f"Button {key} pressed.")
 
-            path = "/home/pboard/Streamdeck/Streamdeck_Data"
+            path = "/home/pi/notiva_pboard/Streamdeck_Data"
 
             data = "temp"
 
@@ -48,7 +48,7 @@ deck.set_key_callback(button_pressed)
 
 def load():
 
-    dst_path = "/home/pboard/Streamdeck/Streamdeck_Data"
+    dst_path = "/home/pi/notiva_pboard/Streamdeck_Data"
 
     if not os.path.exists(dst_path): #Genererer en mappe i pboard mappen med som hedder Streamdeck_Data. Her bliver alt data lagt i
         os.makedirs(dst_path)
@@ -91,7 +91,7 @@ def load():
 
     return
 
-ASSETS_PATH = os.path.join("/home/pboard/Streamdeck/Streamdeck_Data", "icons")
+ASSETS_PATH = os.path.join("/home/pi/notiva_pboard/Streamdeck_Data", "icons")
 
 def render_key_image(deck, icon_filename, label_text, key):
     # Resize the source image asset to best-fit the dimensions of a single key,
