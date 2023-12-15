@@ -14,13 +14,51 @@ import threading
 
 # Function to be called when a button is pressed
 def button_pressed(streamdeck, key, state):
-    if state: #If key is pressed
+    global start_on
+    global load_on
+    global macro_on
+    if start_on and state:
+        if key not in range(6,9):
+            thread = Thread(target=alert_timer, args = (key,"Pick Option"))
+            thread.start()
+        else:
+            if key == 6:
+                set_current_command("To do :(", True) #Skal lede til IP + Offline / Online info
+                time.sleep(2)
+                start_menu()
+            elif key == 7:
+                start_on = False
+                update_images()
+                macro_on = True
+            elif key == 8:
+                load_menu()
+                start_on = False
+                load_on = True
+    if load_on and state:
+        if key not in range(6,8) or key == 14:
+            thread = Thread(target=alert_timer, args = (key,"Pick Option"))
+            thread.start()
+        elif key == 6:
+            load() #To do: skal load alt data
+            load_on = False
+            macro_on = True
+        elif key == 7:
+            load() #To do: Skal kun load data til Macro keyboard
+            load_on = False
+            macro_on = True
+        else:
+            start_menu()
+            start_on = True
+    if macro_on and state:
         if len(threading.enumerate()) >= 3: #If number of threads running is 3 or higher, PBoard is already doing an action
             return  #Disable any other actions
         else: # If number of threads are 2 or lower, deck is ready for a new action
             if key == 0: #If the load key (0) is pressed, create a thread with the load action
                 thread = Thread(target = load)
                 thread.start()
+            elif key == 14:
+                start_menu()
+                start_on = True
             else: #If any other key is pressed send the data instead
                 thread = Thread(target = send_data, args = (streamdeck, key))
                 thread.start()
@@ -71,16 +109,6 @@ def parse_input(raw_input, key):
         time.sleep(0.02)
     set_current_command("Reset", False)
 
-# Find a StreamDeck, and open it
-streamdecks = DeviceManager().enumerate()
-if not streamdecks:
-    raise Exception("No StreamDeck found")
-
-deck = streamdecks[0]
-deck.open()
-deck.reset()
-
-deck.set_key_callback(button_pressed)
 
 def load():
 
@@ -96,18 +124,24 @@ def load():
         alert_timer(0, "Intet USB")
 
     else:
+        constants = ["0.jpg", "server.jpg", "macro.jpg", "14.jpg"]
         #Removing existing files and directories
         if os.path.exists(dst_path+"/icons"):
             old_images = os.listdir(dst_path+"/"+"icons")
             for image in old_images:
-                if image != "0.jpg":
+                if image not in constants:
                     os.remove(dst_path+"/"+"icons" + "/" + image)
         old_files = os.listdir(dst_path)
         for old in old_files:
             if old[-3:] == "txt":
                 os.remove(dst_path + "/"+ old)
 
-        alert_timer(0,"Loader...")
+        if start_on:
+            alert_timer(8,"Loader...")
+        if load_on:
+            alert_timer(7,"Loader...")
+        else:
+            alert_timer(0,"Loader...")
         external = drives[2] #Får fat i det eksterne drev
         path = external[1] #Få fat i path til ekstern drev
         files = os.listdir(path) #Alle filer
@@ -122,7 +156,7 @@ def load():
                 os.makedirs(dst_path+"/icons") #Hvis ikke, lav den
         
         for icon in icons: #Gå igennem alle billederne
-            if icon != "0.jpg":
+            if icon not in constants:
                 shutil.copy2(os.path.join(path+"/icons",icon), os.path.join(dst_path+"/icons",icon)) #Ryk alle billederne
 
         update_images()
@@ -133,7 +167,7 @@ def load():
 
 def update_images():
     for key in range(deck.key_count()):
-        update_key_image(deck, key, False)
+        update_key_image(deck, key, key, False)
 
 ASSETS_PATH = os.path.join("/home/pi/notiva_pboard/Streamdeck_Data", "icons")
 
@@ -146,10 +180,10 @@ def render_key_image(deck, icon_filename, label_text, key):
         image = PILHelper.create_scaled_image(deck, icon, margins=[0, 0, 20, 0])
 
         draw = ImageDraw.Draw(image)
-        if key == 0:
+        if key == 0 or label_text == "0":
             draw.text((image.width/2-len("Load")*3, image.height-20), text="Load", anchor="ms", fill="white")
         else:
-            draw.text((image.width/2-len(str(key))*3, image.height-20), text=str(key), anchor="ms", fill="white")
+            draw.text((image.width/2-len(str(label_text))*3, image.height-20), text=str(label_text), anchor="ms", fill="white")
 
         return PILHelper.to_native_format(deck, image)
     except:
@@ -158,28 +192,27 @@ def render_key_image(deck, icon_filename, label_text, key):
         if key == 0:
             draw.text((image.width/2-len("Loader")*3, image.height-20), text="Loader", anchor="ms", fill="white")
         else:
-            draw.text((image.width/2-len(str(key))*3, image.height-20), text=str(key), anchor="ms", fill="white")
+            draw.text((image.width/2-len(str(label_text))*3, image.height-20), text=str(label_text), anchor="ms", fill="white")
         return PILHelper.to_native_format(deck, image)
 
 
 # Returns styling information for a key based on its position and state.
-def get_key_style(deck, key, state):
+def get_key_style(deck, filename, key, state):
     name = "Picture"
-    icon = "{}.jpg".format(key)
+    icon = "{}.jpg".format(filename)
     label = "Pressed!" if state else "Key {}".format(key)
 
     return {
         "name": name,
         "icon": os.path.join(ASSETS_PATH, icon),
-        "label": label
+        "label": filename
     }
-
 
 # Creates a new key image based on the key index, style and current key state
 # and updates the image on the StreamDeck.
-def update_key_image(deck, key, state):
+def update_key_image(deck, name, key, state):
     # Determine what icon and label to use on the generated key.
-    key_style = get_key_style(deck, key, state)
+    key_style = get_key_style(deck, name, key, state)
 
     # Generate the custom key with the requested image and label.
     image = render_key_image(deck, key_style["icon"], key_style["label"],key)
@@ -201,7 +234,15 @@ def alert_timer(key, text, timer = 2):
 
     time.sleep(timer)
 
-    update_key_image(deck,key,False)
+    if macro_on:
+        update_key_image(deck,key,key,False)
+    else:
+        image = PILHelper.create_image(deck)
+        draw = ImageDraw.Draw(image)
+
+        draw.rectangle((0, 0, image.width, image.height), fill="black")
+        deck.set_key_image(key, PILHelper.to_native_format(deck, image))
+        
 
 def draw_text(text):
     image = PILHelper.create_image(deck)
@@ -234,13 +275,35 @@ def set_current_command(text, running = False):
     
     return running
 
+def start_menu():
+    names = ["server", "macro", "0"]
+    for key in range(deck.key_count()):
+        if key in range(6,9):
+            update_key_image(deck, names[key-6], key, False)
+        else:
+            image = PILHelper.create_image(deck)
+            draw = ImageDraw.Draw(image)
+
+            draw.rectangle((0, 0, image.width, image.height), fill="black")
+            deck.set_key_image(key, PILHelper.to_native_format(deck, image))
+
+def load_menu():
+    names = ["0", "macro data"]
+    for key in range(deck.key_count()):
+        if key in range(6,8):
+            update_key_image(deck, names[key-6], key, False)
+        else:
+            image = PILHelper.create_image(deck)
+            draw = ImageDraw.Draw(image)
+
+            draw.rectangle((0, 0, image.width, image.height), fill="black")
+            deck.set_key_image(key, PILHelper.to_native_format(deck, image))
 
 def start():
-
-    alert_timer(0, "Loader...")
+    start_menu()
 
     #load()
-    update_images()
+    #update_images()
 
     try:
         print("Press a button on your Stream Deck...")
@@ -251,4 +314,18 @@ def start():
     finally:
         deck.close()
 
+# Find a StreamDeck, and open it
+streamdecks = DeviceManager().enumerate()
+if not streamdecks:
+    raise Exception("No StreamDeck found")
+
+deck = streamdecks[0]
+deck.open()
+deck.reset()
+
+deck.set_key_callback(button_pressed)
+
+start_on = True
+load_on = False
+macro_on = False
 start()
