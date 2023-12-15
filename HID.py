@@ -115,24 +115,3 @@ def send_keypress(k):
         write_report(NULL_CHAR * 8)
 
     time.sleep(0.02) # Must be above .01
-
-def parse_input(raw_input):
-    lines = raw_input.split("\n")
-    for line in lines:
-        seperator = line.index(" ")
-        mode = line[:seperator]
-        content = line[seperator+1:]
-        match mode:
-            case "send":
-                send_text(content)
-            case "wait":
-                time.sleep(int(content)/1000)
-            case "button":
-                send_button(content)
-            case "hold":
-                hold(content)
-            case "release":
-                release(content)
-            case "locale":
-                change_layout(content)
-        time.sleep(0.02)

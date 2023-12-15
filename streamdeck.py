@@ -8,32 +8,68 @@ import time
 import subprocess #bare til at teste
 import sys
 import HID
+from multiprocessing import Process
+from threading import Thread
+import threading
 
 # Function to be called when a button is pressed
 def button_pressed(streamdeck, key, state):
-    if state:
-
-        if key == 0:
-            load()
-        else:
-            print(f"Button {key} pressed.")
-
-            path = "/home/pi/notiva_pboard/Streamdeck_Data"
-
-            data = "temp"
-
-            files = os.listdir(path)
-
-            for file in files:
-                if file == str(key)+".txt":
-                    with open(path + "/" + file) as f:
-                        data = f.read()
+    if state: #If key is pressed
+        if len(threading.enumerate()) >= 3: #If number of threads running is 3 or higher, PBoard is already doing an action
+            return  #Disable any other actions
+        else: # If number of threads are 2 or lower, deck is ready for a new action
+            if key == 0: #If the load key (0) is pressed, create a thread with the load action
+                thread = Thread(target = load)
+                thread.start()
+            else: #If any other key is pressed send the data instead
+                thread = Thread(target = send_data, args = (streamdeck, key))
+                thread.start()
             
-            if data == "temp" or data == "":
-                alert(key, "No File")
-            else:
-                HID.parse_input(data)
-            
+
+def send_data(streamdeck,key): #Functions that reads and prepares data for the parse_input function
+
+    print(f"Button {key} pressed.") #Debug statment
+
+    path = "/home/pi/notiva_pboard/Streamdeck_Data" #Set the path of data
+
+    data = "temp"
+
+    files = os.listdir(path)
+
+    for file in files:
+        if file == str(key)+".txt":
+            with open(path + "/" + file) as f:
+                data = f.read()
+    
+    if data == "temp" or data == "":
+        alert_timer(key, "No File")
+    else:
+        running_overlay(key) #Creates new overlay for streamdeck while running
+        parse_input(data, key)
+    
+def parse_input(raw_input, key):
+    lines = raw_input.split("\n")
+    for line in lines:
+        seperator = line.index(" ")
+        mode = line[:seperator]
+        content = line[seperator+1:]
+        match mode:
+            case "send":
+                set_current_command("Writing", True)
+                HID.send_text(content)
+            case "wait":
+                set_current_command("Waiting", True)
+                time.sleep(int(content)/1000)
+            case "button":
+                HID.send_button(content)
+            case "hold":
+                HID.hold(content)
+            case "release":
+                HID.release(content)
+            case "locale":
+                HID.change_layout(content)
+        time.sleep(0.02)
+    set_current_command("Reset", False)
 
 # Find a StreamDeck, and open it
 streamdecks = DeviceManager().enumerate()
@@ -57,17 +93,21 @@ def load():
 
 
     if len(drives) < 3: #no usb
-        alert(0, "Intet USB")
+        alert_timer(0, "Intet USB")
 
     else:
         #Removing existing files and directories
         if os.path.exists(dst_path+"/icons"):
-            shutil.rmtree(dst_path+"/"+"icons")
+            old_images = os.listdir(dst_path+"/"+"icons")
+            for image in old_images:
+                if image != "0.jpg":
+                    os.remove(dst_path+"/"+"icons" + "/" + image)
         old_files = os.listdir(dst_path)
         for old in old_files:
-            os.remove(dst_path + "/"+ old)
+            if old[-3:] == "txt":
+                os.remove(dst_path + "/"+ old)
 
-        alert(0,"Loader...")
+        alert_timer(0,"Loader...")
         external = drives[2] #Får fat i det eksterne drev
         path = external[1] #Få fat i path til ekstern drev
         files = os.listdir(path) #Alle filer
@@ -82,7 +122,8 @@ def load():
                 os.makedirs(dst_path+"/icons") #Hvis ikke, lav den
         
         for icon in icons: #Gå igennem alle billederne
-            shutil.copy2(os.path.join(path+"/icons",icon), os.path.join(dst_path+"/icons",icon)) #Ryk alle billederne
+            if icon != "0.jpg":
+                shutil.copy2(os.path.join(path+"/icons",icon), os.path.join(dst_path+"/icons",icon)) #Ryk alle billederne
 
         update_images()
 
@@ -149,22 +190,54 @@ def update_key_image(deck, key, state):
         # Update requested key with the generated image.
         deck.set_key_image(key, image)
 
-def alert(key, text):
+def alert_timer(key, text, timer = 2):
     image = PILHelper.create_image(deck)
     draw = ImageDraw.Draw(image)
 
     draw.rectangle((0, 0, image.width, image.height), fill="black")
-    draw.text((image.width/2-len(text)*3, image.height-20), str(text), fill="white", anchor="center")
+    draw.text((image.width/2-len(text)*3, image.height-36), str(text), fill="white", anchor="center")
     
     deck.set_key_image(key, PILHelper.to_native_format(deck, image))
 
-    time.sleep(2)
+    time.sleep(timer)
 
     update_key_image(deck,key,False)
 
+def draw_text(text):
+    image = PILHelper.create_image(deck)
+    draw = ImageDraw.Draw(image)
+
+    draw.rectangle((0, 0, image.width, image.height), fill="black")
+    draw.text((image.width/2-len(str(text))*3, image.height-36), str(text), fill="white", anchor="center")
+
+    return image
+
+def running_overlay(key):
+    descriptive_text = ["Currently", "Running", "Macro", "Number", str(key)]
+    for key in range(deck.key_count()):
+        if key < 5: #Top row
+            image = draw_text(descriptive_text[key])
+            deck.set_key_image(key, PILHelper.to_native_format(deck, image))
+        else:
+            image = PILHelper.create_image(deck)
+            draw = ImageDraw.Draw(image)
+
+            draw.rectangle((0, 0, image.width, image.height), fill="black")
+            deck.set_key_image(key, PILHelper.to_native_format(deck, image))
+
+def set_current_command(text, running = False):
+    if running:
+        image = draw_text(text)
+        deck.set_key_image(7, PILHelper.to_native_format(deck, image))
+    else:
+        update_images()
+    
+    return running
+
+
 def start():
 
-    alert(0, "Loader...")
+    alert_timer(0, "Loader...")
 
     #load()
     update_images()
