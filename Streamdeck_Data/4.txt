@@ -1,0 +1,8 @@
+send shell
+button enter
+wait 1000
+send sudo mount /dev/sda1 /mnt; mkdir -p /tmp/crosusrlocal; sudo mount /dev/mmcblk0p1 /tmp/crosusrlocal; sudo mkdir -p /tmp/crosusrlocal/dev_image/bin; cd /tmp/crosusrlocal/dev_image/bin; sudo cp /mnt/lyd .; sudo cp /mnt/asound.state .; sudo chmod 755 lyd
+button enter
+wait 1000
+send sudo reboot
+button enter

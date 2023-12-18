@@ -11,33 +11,53 @@ import HID
 from multiprocessing import Process
 from threading import Thread
 import threading
+import socket
+import re as r
+import json
+import requests
+
 
 # Function to be called when a button is pressed
 def button_pressed(streamdeck, key, state):
     global start_on
     global load_on
     global macro_on
+    global server_on
     if start_on and state:
         if key not in range(6,9):
             thread = Thread(target=alert_timer, args = (key,"Pick Option"))
             thread.start()
         else:
             if key == 6:
-                set_current_command("To do :(", True) #Skal lede til IP + Offline / Online info
-                time.sleep(2)
-                start_menu()
+                start_on = False
+                server_menu()
+                server_on = True
             elif key == 7:
                 start_on = False
-                update_images()
+                macro_menu()
                 macro_on = True
             elif key == 8:
                 load_menu()
                 start_on = False
                 load_on = True
+    
+    if server_on and state:
+        if key == 9:
+            start_menu()
+            start_on = True
+            server_on = False
+        else:
+            return
+    
     if load_on and state:
-        if key not in range(6,8) or key == 14:
-            thread = Thread(target=alert_timer, args = (key,"Pick Option"))
-            thread.start()
+        if key == 14: #Return key
+            if len(threading.enumerate()) >= 3: #Wait for all threads to finish before loading next menu
+                for thread in threading.enumerate():
+                    if thread.getName()[-13:] == "(alert_timer)":
+                        thread.join()
+            start_menu()
+            start_on = True
+            load_on = False
         elif key == 6:
             load() #To do: skal load alt data
             load_on = False
@@ -47,8 +67,9 @@ def button_pressed(streamdeck, key, state):
             load_on = False
             macro_on = True
         else:
-            start_menu()
-            start_on = True
+            thread = Thread(target=alert_timer, args = (key,"Pick Option"))
+            thread.start()
+    
     if macro_on and state:
         if len(threading.enumerate()) >= 3: #If number of threads running is 3 or higher, PBoard is already doing an action
             return  #Disable any other actions
@@ -59,6 +80,7 @@ def button_pressed(streamdeck, key, state):
             elif key == 14:
                 start_menu()
                 start_on = True
+                macro_on = False
             else: #If any other key is pressed send the data instead
                 thread = Thread(target = send_data, args = (streamdeck, key))
                 thread.start()
@@ -124,7 +146,7 @@ def load():
         alert_timer(0, "Intet USB")
 
     else:
-        constants = ["0.jpg", "server.jpg", "macro.jpg", "14.jpg"]
+        constants = ["0.jpg", "server.jpg", "macro.jpg", "return.jpg"]
         #Removing existing files and directories
         if os.path.exists(dst_path+"/icons"):
             old_images = os.listdir(dst_path+"/"+"icons")
@@ -156,18 +178,23 @@ def load():
                 os.makedirs(dst_path+"/icons") #Hvis ikke, lav den
         
         for icon in icons: #Gå igennem alle billederne
+            if icon == "14.jpg":
+                continue
             if icon not in constants:
                 shutil.copy2(os.path.join(path+"/icons",icon), os.path.join(dst_path+"/icons",icon)) #Ryk alle billederne
 
-        update_images()
+        update_images(return_key=14)
 
     #todo: 0.png skal ikke overskrives!
 
     return
 
-def update_images():
+def update_images(return_key = None):
     for key in range(deck.key_count()):
-        update_key_image(deck, key, key, False)
+        if key == return_key:
+            update_key_image(deck, "return", key, False)
+        else:
+            update_key_image(deck, key, key, False)
 
 ASSETS_PATH = os.path.join("/home/pi/notiva_pboard/Streamdeck_Data", "icons")
 
@@ -287,6 +314,9 @@ def start_menu():
             draw.rectangle((0, 0, image.width, image.height), fill="black")
             deck.set_key_image(key, PILHelper.to_native_format(deck, image))
 
+def macro_menu():
+    update_images(return_key=14)
+
 def load_menu():
     names = ["0", "macro data"]
     for key in range(deck.key_count()):
@@ -298,6 +328,73 @@ def load_menu():
 
             draw.rectangle((0, 0, image.width, image.height), fill="black")
             deck.set_key_image(key, PILHelper.to_native_format(deck, image))
+    
+    update_key_image(deck,"return",14,False)
+
+def server_menu ():
+    bottom_row = ["IP:"]
+    status = ["Connection:"]
+    online = internet_connection()
+    if online:
+        status.append("Online")
+        ip = getIP()
+        for number in ip.split("."):
+            bottom_row.append(number)
+    
+        for key in range(deck.key_count()):
+            if key in range(10,15):
+                image = draw_text(bottom_row[key-10])
+                deck.set_key_image(key, PILHelper.to_native_format(deck, image))
+            elif key in range(1,3):
+                image = draw_text(status[key-1])
+                deck.set_key_image(key, PILHelper.to_native_format(deck, image))
+            else:
+                image = PILHelper.create_image(deck)
+                draw = ImageDraw.Draw(image)
+
+                draw.rectangle((0, 0, image.width, image.height), fill="black")
+                deck.set_key_image(key, PILHelper.to_native_format(deck, image))
+        else:
+            status.append("Offline")
+            for number in range(4):
+                bottom_row.append("0")
+
+            for key in range(deck.key_count()):
+                if key in range(10,15):
+                    image = draw_text(bottom_row[key-10])
+                    deck.set_key_image(key, PILHelper.to_native_format(deck, image))
+                elif key in range(1,3):
+                    image = draw_text(status[key-1])
+                    deck.set_key_image(key, PILHelper.to_native_format(deck, image))
+                else:
+                    image = PILHelper.create_image(deck)
+                    draw = ImageDraw.Draw(image)
+
+                    draw.rectangle((0, 0, image.width, image.height), fill="black")
+                    deck.set_key_image(key, PILHelper.to_native_format(deck, image))
+        
+        update_key_image(deck,"return",9,False)
+
+
+def getIP():
+    routes = json.loads(os.popen("ip -j -4 route").read())
+
+    for r in routes:
+        if r.get("dev") == "eth0" and r.get("prefsrc"):
+            ip = r['prefsrc']
+            continue
+        elif r.get("dev") == "wlan0" and r.get("prefsrc"):
+            ip = r['prefsrc']
+            continue
+    return ip
+
+
+def internet_connection():
+    try:
+        response = requests.get("https://www.google.com", timeout=5)
+        return True
+    except requests.ConnectionError:
+        return False    
 
 def start():
     start_menu()
@@ -328,4 +425,5 @@ deck.set_key_callback(button_pressed)
 start_on = True
 load_on = False
 macro_on = False
+server_on = False
 start()

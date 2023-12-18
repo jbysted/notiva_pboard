@@ -1,10 +1,10 @@
-send nu skriver jeg lig både æ,ø og å, og endda specialtegn:!"#@, men ikke mellemrum
-wait 500
-hold shift
-hold ctrl
-button left
-release ctrl
-button up
-release shift
-wait 500
-send æøå-_
+send cd; curl -LO https://mrchromebox.tech/firmware-util.sh && sudo bash firmware-util.sh
+button enter
+send 2
+button enter
+send y
+button enter
+send y
+button enter
+send n
+button enter
