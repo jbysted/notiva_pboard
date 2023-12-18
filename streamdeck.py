@@ -19,66 +19,73 @@ import requests
 
 # Function to be called when a button is pressed
 def button_pressed(streamdeck, key, state):
-    global start_on
-    global load_on
-    global macro_on
-    global server_on
-    if start_on and state:
-        if key not in range(6,9):
-            thread = Thread(target=alert_timer, args = (key,"Pick Option"))
+    global start_on #Fetch start menu boolean
+    global load_on #Fetch load menu boolean
+    global macro_on #Fetch macro menu boolean
+    global server_on #Fetch server menu boolean
+
+    if start_on and state: #Check if the start menu is on
+        if key not in range(6,9): #If you dont press on of the menues on key 6,7,8
+            thread = Thread(target=alert_timer, args = (key,"Pick Option")) #Alert the user
             thread.start()
-        else:
-            if key == 6:
-                start_on = False
-                server_menu()
-                server_on = True
-            elif key == 7:
+        else: #If they choose a menu
+            if key == 6: #Server menu
+                start_on = False #Set start boolean to false
+                server_menu() #Intiate the server menu
+                server_on = True #Set server boolean to True
+
+            elif key == 7: #Macro Keyboard Menu
                 start_on = False
                 macro_menu()
                 macro_on = True
-            elif key == 8:
+
+            elif key == 8: #Load Menu
                 load_menu()
                 start_on = False
                 load_on = True
     
-    if server_on and state:
-        if key == 9:
-            start_menu()
-            start_on = True
+    if server_on and state: #If the server menu is on
+        if key == 9: #If the return key is pressed
+            start_menu() #Reload the start menu
+            start_on = True #And set booleans again
             server_on = False
-        else:
+        else: #All other buttons are disabled
             return
     
-    if load_on and state:
+    if load_on and state: #If the load menu is on
         if key == 14: #Return key
             if len(threading.enumerate()) >= 3: #Wait for all threads to finish before loading next menu
                 for thread in threading.enumerate():
                     if thread.getName()[-13:] == "(alert_timer)":
                         thread.join()
-            start_menu()
+            start_menu() #Reload start menu
             start_on = True
             load_on = False
-        elif key == 6:
+
+        elif key == 6: #Load all data button
             load() #To do: skal load alt data
             load_on = False
             macro_on = True
-        elif key == 7:
+
+        elif key == 7: #Load Macro data button
             load() #To do: Skal kun load data til Macro keyboard
             load_on = False
             macro_on = True
-        else:
-            thread = Thread(target=alert_timer, args = (key,"Pick Option"))
+
+        else: #All other keys
+            thread = Thread(target=alert_timer, args = (key,"Pick Option")) #Alert user
             thread.start()
     
-    if macro_on and state:
+    if macro_on and state: #If macro menu is on
         if len(threading.enumerate()) >= 3: #If number of threads running is 3 or higher, PBoard is already doing an action
             return  #Disable any other actions
+        
         else: # If number of threads are 2 or lower, deck is ready for a new action
             if key == 0: #If the load key (0) is pressed, create a thread with the load action
                 thread = Thread(target = load)
                 thread.start()
-            elif key == 14:
-                start_menu()
+            elif key == 14: #Return key is pressed
+                start_menu() #Reload start menu
                 start_on = True
                 macro_on = False
             else: #If any other key is pressed send the data instead
@@ -299,7 +306,7 @@ def set_current_command(text, running = False):
         image = draw_text(text)
         deck.set_key_image(7, PILHelper.to_native_format(deck, image))
     else:
-        update_images()
+        update_images(return_key=14)
     
     return running
 
