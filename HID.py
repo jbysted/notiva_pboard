@@ -78,7 +78,7 @@ def get_modifier(combination = holds):
     
     return modifier
 
-def send_text(line):
+def send_text(line, key_lookup):
     #Creates a list of keycodes
     keycodes = []
 

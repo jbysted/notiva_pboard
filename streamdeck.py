@@ -109,6 +109,7 @@ def send_data(streamdeck,key): #Functions that reads and prepares data for the p
     
 def parse_input(raw_input, key):
     lines = raw_input.split("\n")
+    key_layout = HID.change_layout("da_dk")
     for line in lines:
         seperator = line.index(" ")
         mode = line[:seperator]
@@ -116,7 +117,7 @@ def parse_input(raw_input, key):
         match mode:
             case "send":
                 set_current_command("Writing", True)
-                HID.send_text(content)
+                HID.send_text(content, key_layout)
             case "wait":
                 set_current_command("Waiting", True)
                 time.sleep(int(content)/1000)
@@ -127,7 +128,7 @@ def parse_input(raw_input, key):
             case "release":
                 HID.release(content)
             case "locale":
-                HID.change_layout(content)
+                key_layout = HID.change_layout(content)
         time.sleep(0.02)
     set_current_command("Reset", False)
 
