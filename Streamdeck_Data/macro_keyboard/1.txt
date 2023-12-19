@@ -1,3 +1,7 @@
+send chronos
+button enter
+wait 1000
+locale en_uk
 send cd; curl -LO https://mrchromebox.tech/firmware-util.sh && sudo bash firmware-util.sh
 button enter
 send 2

@@ -35,7 +35,7 @@ def send_data(key): #Functions that reads and prepares data for the parse_input 
 
     print(f"Button {key} pressed.") #Debug statment
 
-    path = "/home/pi/New_notiva_pboard/Streamdeck_Data/macro_keyboard" #Set the path of data
+    path = "/home/pi/notiva_pboard/Streamdeck_Data/macro_keyboard" #Set the path of data
 
     data = "temp"
 
@@ -78,7 +78,6 @@ def server_input(raw_input):
 
 
 def parse_input(raw_input):
-    print ("parse input activated")
     lines = raw_input.split("\n")
     key_layout = HID.change_layout("da_dk")
     for line in lines:
@@ -87,9 +86,7 @@ def parse_input(raw_input):
         content = line[seperator+1:]
         match mode:
             case "send":
-                print ("Send case found")
                 set_current_command(deck, "Writing", True)
-                print("delegating to HID")
                 HID.send_text(content, key_layout)
             case "wait":
                 set_current_command(deck, "Waiting", True)

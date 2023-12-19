@@ -88,7 +88,6 @@ def send_text(line, key_lookup):
         else:
             print(letter)
     
-    print(keycodes)
 
     for k in keycodes:
         send_keypress(k)
