@@ -1,5 +1,0 @@
-send sudo mount -dev-mmcblk0p12 -mntæ cd -mntæ find . +name (.cfg +exec sudo sed +i øs,')cros?legacy'*cros?efi'=,'1 cros?debug,gø Å^ 'æ
-button enter
-wait 500
-send sudo reboot
-button enter

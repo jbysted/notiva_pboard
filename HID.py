@@ -87,11 +87,10 @@ def send_text(line, key_lookup):
             keycodes.append(key_lookup[letter])
         else:
             print(letter)
-
-
+    
+    print(keycodes)
 
     for k in keycodes:
-        
         send_keypress(k)
 
     write_report(NULL_CHAR * 8)
