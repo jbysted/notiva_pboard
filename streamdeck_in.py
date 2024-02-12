@@ -84,6 +84,7 @@ def button_pressed(streamdeck, key, state):
                 states["load"] = False
                 states["macro"] = True
                 out.update_states(states)
+                out.update_images(deck, return_key=0)
 
         else: #All other keys
             thread = Thread(target=out.alert_timer, args = (deck, key,"Pick Option")) #Alert user

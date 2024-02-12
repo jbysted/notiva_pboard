@@ -9,7 +9,7 @@ def set_deck(streamdeck):
     global deck
     deck = streamdeck
 
-def load_makro(key,states):
+def load_makro(key):
 
     dst_path = "/home/pi/notiva_pboard/Streamdeck_Data/macro_keyboard"
 
@@ -20,7 +20,7 @@ def load_makro(key,states):
 
 
     if len(drives) < 3: #no usb
-        out.alert_timer(deck, key, "Intet USB",states)
+        out.alert_timer(deck, key, "Intet USB")
 
     else:
         constants = ["0.jpg", "server.jpg", "macro.jpg", "return.jpg"]
@@ -35,7 +35,7 @@ def load_makro(key,states):
             if old[-3:] == "txt":
                 os.remove(dst_path + "/"+ old)
 
-        out.alert_timer(key,"Loader...")
+        out.alert_timer(deck, key,"Loader...")
 
         external = drives[2] #Får fat i det eksterne drev
         path = external[1] #Få fat i path til ekstern drev
@@ -56,8 +56,4 @@ def load_makro(key,states):
             if icon not in constants:
                 shutil.copy2(os.path.join(path+"/icons",icon), os.path.join(dst_path+"/icons",icon)) #Ryk alle billederne
 
-        out.update_images(return_key=14)
-
-    #todo: 0.png skal ikke overskrives!
-
-    return
+    return True
