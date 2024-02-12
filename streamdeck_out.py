@@ -81,6 +81,7 @@ def parse_input(raw_input):
     lines = raw_input.split("\n")
     key_layout = HID.change_layout("da_dk")
     for line in lines:
+        print("sending " + str(line))
         seperator = line.index(" ")
         mode = line[:seperator]
         content = line[seperator+1:]
@@ -177,7 +178,7 @@ def alert_timer(deck, key, text, timer = 2):
     if states["macro"]:
         update_key_image(deck,key,key)
     
-    if states["load"] and key in range(6,8):
+    elif states["load"] and key in range(6,8):
         names = ["0", "macro data"]
         update_key_image(deck, names[key-6], key)
 
