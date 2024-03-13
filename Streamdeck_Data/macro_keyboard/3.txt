@@ -1,6 +1,0 @@
-locale en_uk
-send sudo mount /dev/mmcblk0p12 /mnt; cd /mnt; sudo find . -name *.cfg -exec sed -i 's,\(cros_legacy\|cros_efi\),\1 cros_debug,g' {} \; 
-button enter
-wait 500
-send sudo reboot
-button enter

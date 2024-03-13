@@ -85,6 +85,11 @@ def parse_input(raw_input):
         seperator = line.index(" ")
         mode = line[:seperator]
         content = line[seperator+1:]
+
+        if not HID.USB:
+            set_current_command(deck, "Reset", False)
+            return
+
         match mode:
             case "send":
                 set_current_command(deck, "Writing", True)

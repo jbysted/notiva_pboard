@@ -4,11 +4,16 @@ import en_uk_keycodes
 
 #Variables
 NULL_CHAR = chr(0)
+USB = True
 
 #Create write_report function to write HID codes to the HID Keyboard
 def write_report(report):
-    with open('/dev/hidg0', 'rb+') as fd:
-        fd.write(report.encode())
+    try:
+        with open('/dev/hidg0', 'rb+') as fd:
+            fd.write(report.encode())
+    except:
+        global USB
+        USB = False
 
 buttons = {
     'enter':        40,     # ENTER

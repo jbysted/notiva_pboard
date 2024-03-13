@@ -107,6 +107,7 @@ def button_pressed(streamdeck, key, state):
             else: #If any other key is pressed send the data instead
                 thread = Thread(target = out.send_data, args = [key])
                 thread.start()
+                    
 
 
 def start(deck):
