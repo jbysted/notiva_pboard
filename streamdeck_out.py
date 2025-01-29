@@ -41,6 +41,7 @@ def send_data(key): #Functions that reads and prepares data for the parse_input 
 
     files = os.listdir(path)
 
+
     for file in files:
         if file == str(key)+".txt":
             with open(path + "/" + file) as f:
@@ -52,6 +53,13 @@ def send_data(key): #Functions that reads and prepares data for the parse_input 
     else:
         running_overlay(deck, key) #Creates new overlay for streamdeck while running
         parse_input(data)
+    
+    if not HID.USB: #This executes if no USB keyboard was discovered
+        no_keyboard_messeage(deck,key) #Print a message to the user through streamdeck
+        states["reset"] = True #Set the reset flag to True
+        update_states(states) #Update it
+        HID.USB = True #We reset the flag from HID
+        return False
 
 
 def server_input(raw_input):
@@ -203,6 +211,24 @@ def draw_text(deck, text):
     draw.text((image.width/2-len(str(text))*3, image.height-36), str(text), fill="white", anchor="center")
 
     return image
+
+#This function prints a message to the user, regarding no USB keyboard is found
+def no_keyboard_messeage(deck, key): 
+    print("No USB Keyboard detected")
+    descriptive_text = ["No", "Keyboard", "Was", "Found", "Resetting"]
+    for key in range(deck.key_count()):
+        if key in range(5,10): #Middel Row
+            image = draw_text(deck, descriptive_text[key-5])
+            deck.set_key_image(key, PILHelper.to_native_format(deck, image))
+        else:
+            image = PILHelper.create_image(deck)
+            draw = ImageDraw.Draw(image)
+
+            draw.rectangle((0, 0, image.width, image.height), fill="black")
+            deck.set_key_image(key, PILHelper.to_native_format(deck, image))
+    time.sleep(5)
+    set_current_command(deck, "Reset", False)
+
 
 def running_overlay(deck, key):
     descriptive_text = ["Currently", "Running", "Macro", "Number", str(key)]

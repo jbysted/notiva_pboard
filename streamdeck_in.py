@@ -126,6 +126,9 @@ def start(deck):
     try:
         print("Press a button on your Stream Deck...")
         while True:
+            if out.states["reset"]: #If the call to reset is given, reset the script
+                print("Reset command given, resetting")
+                return
             time.sleep(0.1)
     except KeyboardInterrupt:
         pass
@@ -143,5 +146,13 @@ deck.reset()
 
 deck.set_key_callback(button_pressed)
 
-states = {"start": True, "load": False, "macro": False, "server": False}
+states = {"start": True, "load": False, "macro": False, "server": False, "reset": False}
 start(deck)
+
+while out.states["reset"]: #If the reset command was given, rerun the script
+    states = {"start": True, "load": False, "macro": False, "server": False, "reset": False} # Set the states again
+    deck = streamdecks[0] #Get the streamdeck
+    deck.open()
+    deck.reset()
+    print("Reset Complete")
+    start(deck) #And start it once again
