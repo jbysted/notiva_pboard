@@ -21,6 +21,7 @@ def load_makro(key):
 
     if len(drives) < 3: #no usb
         out.alert_timer(deck, key, "Intet USB")
+        return False
 
     else:
         constants = ["0.jpg", "server.jpg", "macro.jpg", "return.jpg"]

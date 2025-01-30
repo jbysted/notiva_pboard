@@ -77,6 +77,7 @@ def button_pressed(streamdeck, key, state):
                 states["load"] = False
                 states["macro"] = True
                 out.update_states(states)
+                out.macro_menu(deck)
 
         elif key == 7: #Load Macro data button
             succed = makro.load_makro(key) #To do: Skal kun load data til Macro keyboard
@@ -85,6 +86,7 @@ def button_pressed(streamdeck, key, state):
                 states["macro"] = True
                 out.update_states(states)
                 out.update_images(deck, return_key=0)
+                out.macro_menu(deck)
 
         else: #All other keys
             thread = Thread(target=out.alert_timer, args = (deck, key,"Pick Option")) #Alert user

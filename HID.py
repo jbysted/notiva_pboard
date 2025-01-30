@@ -12,6 +12,7 @@ def write_report(report):
         with open('/dev/hidg0', 'rb+') as fd:
             fd.write(report.encode())
     except Exception as e: #If it could not write to the USB, it means nothing is connected.
+        print(e)
         global USB
         USB = False #Set the Flag for USB to False
 

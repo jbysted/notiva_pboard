@@ -192,7 +192,7 @@ def alert_timer(deck, key, text, timer = 2):
         update_key_image(deck,key,key)
     
     elif states["load"] and key in range(6,8):
-        names = ["0", "macro data"]
+        names = ["load", "macro data"]
         update_key_image(deck, names[key-6], key)
 
     else:
