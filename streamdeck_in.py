@@ -8,15 +8,19 @@ import makro
 from server import host
 import time
 from multiprocessing import Process
+import wifi
+import git
+import os 
 
 # Function to be called when a button is pressed
 def button_pressed(streamdeck, key, state):
     global states
     global server #The server thread
+    print(str(key) + " Pressed!")
 
 
     if states["start"] and state: #Check if the start menu is on
-        if key not in range(6,9): #If you dont press on of the menues on key 6,7,8
+        if key not in range(6,9) and key != 14: #If you dont press on of the menues on key 6,7,8 or 14
             thread = Thread(target=out.alert_timer, args = (deck, key,"Pick Option")) #Alert the user
             thread.start()
         else: #If they choose a menu
@@ -46,6 +50,13 @@ def button_pressed(streamdeck, key, state):
                 states["load"] = True
                 out.update_states(states)
                 out.load_menu(deck)
+
+            elif key == 14: #Github Update key
+                print("Updating Git")
+                curret_wd = os.path.dirname(os.path.realpath(__file__))
+                g = git.cmd.Git(curret_wd)
+                g.pull()
+
     
     if states["server"] and state: #If the server menu is on
         if key == 0: #If the return key is pressed
@@ -136,6 +147,9 @@ def start(deck):
         pass
     finally:
         deck.close()
+
+#Add predifined WiFi from wifi.py to PBoard
+wifi.add_wifi()
 
 # Find a StreamDeck, and open it
 streamdecks = DeviceManager().enumerate()

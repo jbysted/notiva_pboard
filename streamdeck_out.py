@@ -253,10 +253,12 @@ def set_current_command(deck, text, running = False):
     return running
 
 def start_menu(deck):
-    names = ["server", "macro", "load"]
+    names = ["server", "macro", "load","git"]
     for key in range(deck.key_count()):
         if key in range(6,9):
             update_key_image(deck, names[key-6], key)
+        elif key == 14:
+            update_key_image(deck, names[3], key)
         else:
             image = PILHelper.create_image(deck)
             draw = ImageDraw.Draw(image)
