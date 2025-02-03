@@ -16,7 +16,6 @@ import os
 def button_pressed(streamdeck, key, state):
     global states
     global server #The server thread
-    print(str(key) + " Pressed!")
 
 
     if states["start"] and state: #Check if the start menu is on
@@ -52,7 +51,7 @@ def button_pressed(streamdeck, key, state):
                 out.load_menu(deck)
 
             elif key == 14: #Github Update key
-                print("Updating Git")
+                out.alert_timer(deck, key, "Loading")
                 curret_wd = os.path.dirname(os.path.realpath(__file__))
                 g = git.cmd.Git(curret_wd)
                 g.pull()

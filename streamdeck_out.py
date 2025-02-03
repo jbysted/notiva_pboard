@@ -195,6 +195,9 @@ def alert_timer(deck, key, text, timer = 2):
         names = ["load", "macro data"]
         update_key_image(deck, names[key-6], key)
 
+    elif states["start"] and key == 14:
+        update_key_image(deck, "git", key)
+
     else:
         image = PILHelper.create_image(deck)
         draw = ImageDraw.Draw(image)

@@ -10,7 +10,7 @@ button down
 button down
 button down
 button enter
-wait 500
+wait 1500
 send 2680-PSK
 button tab
 button down
@@ -40,14 +40,8 @@ button tab
 button tab
 button tab
 wait 1500
-send itxx0226@solrodsky.dk
+send enhamu@solrodsky.dk
 button enter
-wait 4000
-button tab
-button enter
-wait 1500
-send itxx0226
-button enter
-wait 1500
-send Bysted1Ever
+wait 3000
+send EnrollMe!
 button enter
