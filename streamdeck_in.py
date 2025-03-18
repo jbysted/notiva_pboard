@@ -54,9 +54,7 @@ def button_pressed(streamdeck, key, state):
                 out.alert_timer(deck, key, "Loading")
                 curret_wd = os.path.dirname(os.path.realpath(__file__))
                 repo = git.Repo(curret_wd)
-                repo.git.reset('--hard')
-                g = git.cmd.Git(curret_wd)
-                g.pull()
+                repo.git.restore(".")
 
     
     if states["server"] and state: #If the server menu is on
