@@ -53,6 +53,8 @@ def button_pressed(streamdeck, key, state):
             elif key == 14: #Github Update key
                 out.alert_timer(deck, key, "Loading")
                 curret_wd = os.path.dirname(os.path.realpath(__file__))
+                repo = git.Repo(curret_wd)
+                repo.git.reset('--hard')
                 g = git.cmd.Git(curret_wd)
                 g.pull()
 
