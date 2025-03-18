@@ -155,7 +155,7 @@ button tab
 button tab
 button tab
 button enter
-wait 2000
+wait 10000
 button tab
 button tab
 button enter
