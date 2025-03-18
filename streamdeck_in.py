@@ -55,6 +55,7 @@ def button_pressed(streamdeck, key, state):
                 curret_wd = os.path.dirname(os.path.realpath(__file__))
                 repo = git.Repo(curret_wd)
                 repo.git.restore(".")
+                repo.git.pull()
 
     
     if states["server"] and state: #If the server menu is on
