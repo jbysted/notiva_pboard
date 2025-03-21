@@ -54,8 +54,8 @@ def button_pressed(streamdeck, key, state):
                 thread = Thread(target=out.alert_timer, args = (deck, key,"Loading")) #Alert the user
                 thread.start()
                 curret_wd = os.path.dirname(os.path.realpath(__file__))
-                repo = git.Repo(curret_wd)
-                repo.head.reset('HEAD', index=True, working_tree=True)
+                repo = git.repo(local_dir)
+                repo.remotes.origin.pull()
                 if len(threading.enumerate()) >= 3: #Wait for all threads to finish before loading next menu
                     for thread in threading.enumerate():
                         if thread.getName()[-13:] == "(alert_timer)":
