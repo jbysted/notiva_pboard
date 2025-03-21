@@ -54,7 +54,6 @@ def button_pressed(streamdeck, key, state):
                 thread = Thread(target=out.alert_timer, args = (deck, key,"Loading")) #Alert the user
                 thread.start()
                 curret_wd = os.path.dirname(os.path.realpath(__file__))
-                curret_wd = os.path.dirname(os.path.realpath(__file__))
                 repo = git.Repo(curret_wd)
                 repo.head.reset('HEAD', index=True, working_tree=True)
                 repo.remotes.origin.pull("main")
