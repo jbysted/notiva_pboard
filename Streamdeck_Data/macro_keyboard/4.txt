@@ -160,7 +160,7 @@ button tab
 button tab
 button tab
 button enter
-wait 4000
+wait 5000
 button tab
 button tab
 wait 1000
