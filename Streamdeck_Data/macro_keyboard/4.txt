@@ -167,9 +167,9 @@ button tab
 button tab
 button tab
 button tab
-wait 1000
+wait 3000
 send enhamu@solrodsky.dk
 button enter
-wait 3000
+wait 6000
 send EnrollMe!
 button enter
