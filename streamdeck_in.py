@@ -51,11 +51,11 @@ def button_pressed(streamdeck, key, state):
                 out.load_menu(deck)
 
             elif key == 14: #Github Update key
-                out.alert_timer(deck, key, "Loading")
+                thread = Thread(target=out.alert_timer, args = (deck, key,"Loading")) #Alert the user
+                thread.start()
                 curret_wd = os.path.dirname(os.path.realpath(__file__))
                 repo = git.Repo(curret_wd)
-                repo.git.restore(".")
-                repo.git.pull()
+                repo.head.reset('HEAD~1', index=True, working_tree=True)
 
     
     if states["server"] and state: #If the server menu is on
