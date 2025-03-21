@@ -167,6 +167,8 @@ button tab
 button tab
 button tab
 button tab
+button tab
+button tab
 wait 1000
 send enhamu@solrodsky.dk
 button enter
