@@ -22,10 +22,10 @@ button tab
 wait 500
 button tab
 button enter
-wait 3000
+wait 6000
 button tab
 button enter
-wait 21000
+wait 15000
 button enter
 wait 1000
 button tab
