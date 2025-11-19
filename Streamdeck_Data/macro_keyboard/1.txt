@@ -9,6 +9,11 @@ button down
 button down
 button down
 button down
+button down
+button down
+button down
+button down
+button down
 button enter
 wait 1500
 send 2680-PSK
