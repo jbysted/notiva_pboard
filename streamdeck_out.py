@@ -89,11 +89,11 @@ def parse_input(raw_input):
     lines = raw_input.split("\n")
     key_layout = HID.change_layout("da_dk")
     for line in lines:
-        print("sending " + str(line))
-        seperator = line.index(" ")
-        mode = line[:seperator]
-        content = line[seperator+1:]
-
+        if not line.isspace() and line != "": #Fjern empty lines
+            print("sending " + str(line))
+            seperator = line.index(" ")
+            mode = line[:seperator]
+            content = line[seperator+1:]
         if not HID.USB:
             set_current_command(deck, "Reset", False)
             return
