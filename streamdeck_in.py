@@ -53,10 +53,7 @@ def button_pressed(streamdeck, key, state):
             elif key == 14: #Github Update key
                 thread = Thread(target=out.alert_timer, args = (deck, key,"Loading")) #Alert the user
                 thread.start()
-                curret_wd = os.path.dirname(os.path.realpath(__file__))
-                repo = git.Repo(curret_wd)
-                repo.head.reset('HEAD', index=True, working_tree=True)
-                repo.remotes.origin.pull("main")
+                os.system("python3 /home/pi/pull.py")
                 if len(threading.enumerate()) >= 3: #Wait for all threads to finish before loading next menu
                     for thread in threading.enumerate():
                         if thread.getName()[-13:] == "(alert_timer)":
