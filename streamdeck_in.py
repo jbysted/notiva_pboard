@@ -53,7 +53,8 @@ def button_pressed(streamdeck, key, state):
             elif key == 14: #Github Update key
                 thread = Thread(target=out.alert_timer, args = (deck, key,"Loading")) #Alert the user
                 thread.start()
-                os.system("sudo python3 /home/pi/pull.py")
+                os.system("sudo python3 /home/pi/pull.py") #Run script that pulls from github
+                os.system("sudo chown pi /home/pi/notiva_pboard -R") #Change ownership back to pi user
                 if len(threading.enumerate()) >= 3: #Wait for all threads to finish before loading next menu
                     for thread in threading.enumerate():
                         if thread.getName()[-13:] == "(alert_timer)":
