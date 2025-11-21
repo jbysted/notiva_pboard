@@ -1,0 +1,10 @@
+button tab
+button tab
+button enter
+wait 1000
+send enhamu
+wait 8000
+send EnrollMe!
+button enter
+wait 2000
+button enter
