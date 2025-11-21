@@ -4,9 +4,10 @@ button enter
 wait 1000
 send enhamu
 button enter
-wait 8000
+wait 11000
 send EnrollMe!
 button enter
 wait 2000
 button enter
+
 
