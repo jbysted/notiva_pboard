@@ -7,7 +7,5 @@ button enter
 wait 11000
 send EnrollMe!
 button enter
-wait 2000
+wait 7000
 button enter
-
-
