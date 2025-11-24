@@ -11,6 +11,7 @@ wait 7000
 button enter
 wait 15000
 button tab
+button enter
 wait 2000
 send kamera
 button enter
