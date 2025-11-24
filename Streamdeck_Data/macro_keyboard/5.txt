@@ -10,6 +10,8 @@ button enter
 wait 7000
 button enter
 wait 15000
+button esc
+wait 1000
 button tab
 button enter
 wait 2000
@@ -30,5 +32,6 @@ button tab
 button tab
 wait 500
 button enter
+
 
 
