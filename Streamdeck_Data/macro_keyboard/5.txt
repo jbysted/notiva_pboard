@@ -1,7 +1,7 @@
 button tab
 button tab
 button enter
-wait 1000
+wait 4000
 send enhamu
 button enter
 wait 11000
@@ -9,3 +9,4 @@ send EnrollMe!
 button enter
 wait 7000
 button enter
+
