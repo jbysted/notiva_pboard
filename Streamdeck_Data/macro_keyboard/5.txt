@@ -9,7 +9,7 @@ send EnrollMe!
 button enter
 wait 7000
 button enter
-wait 15000
+wait 10000
 button esc
 wait 1000
 button tab
@@ -33,3 +33,4 @@ button tab
 wait 500
 button enter
 wait 500
+
