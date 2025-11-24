@@ -14,6 +14,7 @@ button tab
 button enter
 wait 2000
 send kamera
+wait 1000
 button enter
 wait 5000
 button tab
@@ -28,3 +29,4 @@ button tab
 button tab
 button tab
 button enter
+
