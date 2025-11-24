@@ -28,5 +28,7 @@ button tab
 button tab
 button tab
 button tab
+wait 500
 button enter
+
 
