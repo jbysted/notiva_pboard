@@ -9,4 +9,21 @@ send EnrollMe!
 button enter
 wait 7000
 button enter
-
+wait 15000
+button tab
+wait 2000
+send kamera
+button enter
+wait 5000
+button tab
+button left
+wait 2000
+button tab
+button tab
+button tab
+button tab
+button tab
+button tab
+button tab
+button tab
+button enter
