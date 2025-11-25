@@ -145,6 +145,7 @@ def start(deck):
         while True:
             if out.states["reset"]: #If the call to reset is given, reset the script
                 print("Reset command given, resetting")
+                deck.close()
                 return
             time.sleep(0.1)
     except KeyboardInterrupt:
