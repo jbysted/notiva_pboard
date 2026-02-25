@@ -1,3 +1,17 @@
+button tab
+button tab
+button tab
+button enter
+send d
+wait 1000
+button tab
+send d
+wait 1000
+button tab
+button enter
+button tab
+button tab
+button tab
 button enter
 wait 1000
 button tab
