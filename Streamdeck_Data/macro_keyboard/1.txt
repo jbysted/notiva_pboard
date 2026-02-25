@@ -44,7 +44,7 @@ button enter
 wait 6000
 button tab
 button enter
-wait 25000
+wait 35000
 button enter
 wait 1000
 button tab
