@@ -29,6 +29,7 @@ button tab
 button enter
 wait 6000
 button tab
+button tab
 button enter
 wait 35000
 button enter
